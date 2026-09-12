@@ -1,0 +1,17 @@
+//
+//  FoundationSummarizerApp.swift
+//  FoundationSummarizer
+//
+//  Created by Raphael Shimamoto on 11/09/26.
+//
+
+import SwiftUI
+
+@main
+struct FoundationSummarizerApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
