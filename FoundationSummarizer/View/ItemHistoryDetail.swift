@@ -1,0 +1,18 @@
+//
+//  ItemHistoryDetailView.swift
+//  FoundationSummarizer
+//
+//  Created by Raphael Shimamoto on 13/09/26.
+//
+
+import SwiftUI
+
+struct ItemHistoryDetailView: View {
+    var body: some View {
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    }
+}
+
+#Preview {
+    ItemHistoryDetailView()
+}
