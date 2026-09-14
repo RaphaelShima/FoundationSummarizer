@@ -9,50 +9,55 @@ import SwiftUI
 
 struct SummarizerView: View {
     
-    @State private var viewModel = SummarizerViewModel()
+    @State var viewModel: SummarizerViewModel
     
     var body: some View {
-        VStack {
-            Button(action: {
-                viewModel.openFilesPanel()
-            }, label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "document.viewfinder.fill")
-                        .font(.title)
-                    
-                    Text("Resumir")
-                        .font(.title)
-                }
-                .frame(maxWidth: .infinity)
-            })
-            .padding([.trailing, .leading])
-            .fontWeight(.semibold)
-            .buttonStyle(.glass)
-            
-            Text("Atalho: 􀆔􀆝R")
-                .foregroundStyle(.gray)
-            
-            if !viewModel.itens.isEmpty {
-                Divider()
+        NavigationStack {
+            VStack {
+                Button(action: {
+                    Task {
+                        await viewModel.openFilesPanel()
+                    }
+                }, label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "document.viewfinder.fill")
+                            .font(.title)
+                        
+                        Text("Summarize")
+                            .font(.title)
+                    }
+                    .frame(maxWidth: .infinity)
+                })
+                .padding([.trailing, .leading])
+                .fontWeight(.semibold)
+                .buttonStyle(.glass)
                 
-                List(viewModel.itens) { item in
-                    HStack {
-                        VStack {
-                            Text(item.summaryText)
-                            Text(item.category.rawValue)
-                        }
+                Text("Shortcut: 􀆔􀆝R")
+                    .foregroundStyle(.gray)
+                
+                if !viewModel.itens.isEmpty {
+                    Divider()
+                    
+                    Text("Recentes")
+                        .font(.headline)
+                        .foregroundStyle(.gray)
+                    
+                    ForEach(viewModel.itens.suffix(3)) { item in
+                        SummaryItemHistoryCell(item: item)
+                    }
+                    
+                    Divider()
+                    
+                    NavigationLink(destination: ItemHistoryView()) {
+                        Text("See complete history ->")
                     }
                 }
-                
-               NavigationLink(destination: ItemHistoryDetailViewView()) {
-                    Text("Ver histórico completo ->")
-                }
             }
+            .frame(width: 200)
         }
-        .frame(width: 200)
     }
 }
 
-#Preview {
-    SummarizerView()
-}
+//#Preview {
+//    SummarizerView()
+//}

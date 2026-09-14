@@ -9,30 +9,27 @@ import Foundation
 import Observation
 import AppKit
 import UniformTypeIdentifiers
+import FoundationModels
 
 protocol SummarizerViewModelProtocol {
     var itens: [SummaryItem] { get }
+    var service: SummarizeServiceProtocol { get }
     
     func openFilesPanel() async
     func handleFileSelection(url: URL) async -> String
+    func makeSummaryItem(foundationResponse: FoundationResponse) -> SummaryItem
 }
 
 @Observable
 final class SummarizerViewModel: SummarizerViewModelProtocol {
     
-    var itens: [SummaryItem] = [
-//        SummaryItem(id: UUID(),
-//                    summaryText: "Teste1",
-//                    category: .code,
-//                    keywords: ["1", "2"]),
-//        SummaryItem(id: UUID(),
-//                    summaryText: "Teste2",
-//                    category: .code,
-//                    keywords: ["2", "2"])
-    ]
+    var itens: [SummaryItem] 
+    var service: SummarizeServiceProtocol
     
-    func summarize() {
-        print("Resumir")
+    init(itens: [SummaryItem],
+         service: SummarizeServiceProtocol) {
+        self.itens = itens
+        self.service = service
     }
     
     func openFilesPanel() async {
@@ -43,6 +40,14 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
         
         if panel.runModal() == .OK, let url = panel.url {
             let content = await handleFileSelection(url: url)
+            do {
+                let response = try await service.getResponse(fileContent: content)
+                let generatedResponse = response.content
+                let summmaryItem = makeSummaryItem(foundationResponse: generatedResponse)
+                itens.append(summmaryItem)
+            } catch {
+                print("Summarize error: \(error)")
+            }
         }
     }
     
@@ -51,7 +56,7 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
             print("No permission to access file: \(url)")
             return ""
         }
-        do { url.stopAccessingSecurityScopedResource() }
+        defer { url.stopAccessingSecurityScopedResource() }
         
         do {
             return try String(contentsOf: url,
@@ -60,5 +65,13 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
             print("Faile to read file \(url): \(error)")
             return ""
         }
+    }
+    
+    func makeSummaryItem(foundationResponse: FoundationResponse) -> SummaryItem {
+        return SummaryItem(id: UUID(),
+                           title: foundationResponse.title,
+                           summaryText: foundationResponse.summary,
+                           category: Category(rawValue: foundationResponse.category) ?? .unkown,
+                           keywords: foundationResponse.keywords)
     }
 }
