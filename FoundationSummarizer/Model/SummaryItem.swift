@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-struct SummaryItem: Identifiable {
+struct SummaryItem: Identifiable, Hashable {
     let id: UUID
     var title: String
     var summaryText: String
