@@ -14,7 +14,7 @@ struct SummarizerView: View {
     var body: some View {
         VStack {
             Button(action: {
-                viewModel.summarize()
+                viewModel.openFilesPanel()
             }, label: {
                 HStack(spacing: 8) {
                     Image(systemName: "document.viewfinder.fill")
