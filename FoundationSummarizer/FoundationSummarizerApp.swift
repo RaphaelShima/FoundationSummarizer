@@ -13,9 +13,10 @@ struct FoundationSummarizerApp: App {
     @State private var service = SummarizeService()
     
     var body: some Scene {
-        MenuBarExtra("", systemImage: "pencil.line") {
+        MenuBarExtra("Foundation Summarizer", systemImage: "pencil.line") {
             SummarizerView(viewModel: SummarizerViewModel(itens: [],
                                                           service: service))
         }
+        .menuBarExtraStyle(.window)
     }
 }

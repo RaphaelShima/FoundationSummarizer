@@ -8,52 +8,63 @@
 import SwiftUI
 
 struct SummarizerView: View {
-    
+
     @State var viewModel: SummarizerViewModel
-    
+
     var body: some View {
         NavigationStack {
-            VStack {
-                Button(action: {
+            VStack(alignment: .leading) {
+                HStack {
+                    Image(systemName: "doc.text.fill")
+                        .font(.headline)
+
+                    Text("Foundation Summarizer")
+                        .font(.headline)
+                }
+                
+                Divider()
+                
+                Button {
                     Task {
                         await viewModel.openFilesPanel()
                     }
-                }, label: {
-                    HStack(spacing: 8) {
+                } label: {
+                    HStack {
                         Image(systemName: "document.viewfinder.fill")
-                            .font(.title)
-                        
+                            .font(.headline)
+
                         Text("Summarize")
-                            .font(.title)
+                            .font(.headline)
                     }
                     .frame(maxWidth: .infinity)
-                })
-                .padding([.trailing, .leading])
-                .fontWeight(.semibold)
-                .buttonStyle(.glass)
-                
-                Text("Shortcut: 􀆔􀆝R")
-                    .foregroundStyle(.gray)
-                
+                }
+                .buttonStyle(.bordered)
+                    
                 if !viewModel.itens.isEmpty {
+                    
                     Divider()
                     
                     Text("Recentes")
-                        .font(.headline)
-                        .foregroundStyle(.gray)
-                    
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
+
                     ForEach(viewModel.itens.suffix(3)) { item in
                         SummaryItemHistoryCell(item: item)
                     }
-                    
+
                     Divider()
-                    
-                    NavigationLink(destination: ItemHistoryView()) {
-                        Text("See complete history ->")
+
+                    NavigationLink {
+                        ItemHistoryView()
+                    } label: {
+                        Text("See complete history →")
+                            .font(.body.weight(.medium))
+                            .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.bordered)
                 }
             }
-            .frame(width: 200)
+            .padding(16)
         }
     }
 }
