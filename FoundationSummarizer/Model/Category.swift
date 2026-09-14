@@ -9,10 +9,11 @@ import Foundation
 import SwiftUI
 
 enum Category: String {
-    case code = "Código"
-    case work = "Trabalho"
-    case study = "Estudo"
-    case personal = "Pessoal"
+    case code = "Code"
+    case work = "Work"
+    case study = "Study"
+    case personal = "Personal"
+    case unkown = "Unkown"
 }
 
 extension Category {
@@ -26,6 +27,8 @@ extension Category {
             return "book.pages.fill"
         case .personal:
             return "person.fill"
+        case .unkown:
+            return ""
         }
     }
     
@@ -39,6 +42,8 @@ extension Category {
             return .yellow
         case .personal:
             return .black
+        case .unkown:
+            return .pink
         }
     }
 }
