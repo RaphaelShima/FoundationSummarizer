@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct SummarizerView: View {
-
+    
     @State var viewModel: SummarizerViewModel
-
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading) {
                 HStack {
                     Image(systemName: "doc.text.fill")
                         .font(.headline)
-
+                    
                     Text("Foundation Summarizer")
                         .font(.headline)
                 }
@@ -32,14 +32,14 @@ struct SummarizerView: View {
                     HStack {
                         Image(systemName: "document.viewfinder.fill")
                             .font(.headline)
-
+                        
                         Text("Summarize")
                             .font(.headline)
                     }
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
-                    
+                
                 if !viewModel.itens.isEmpty {
                     
                     Divider()
@@ -47,13 +47,16 @@ struct SummarizerView: View {
                     Text("Recentes")
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
-
+                    
                     ForEach(viewModel.itens.suffix(3)) { item in
-                        SummaryItemHistoryCell(item: item)
+                        NavigationLink(value: item) {
+                            SummaryItemHistoryCell(item: item)
+                        }
+                        .buttonStyle(.borderless)
                     }
-
+                    
                     Divider()
-
+                    
                     NavigationLink {
                         ItemHistoryView()
                     } label: {
@@ -65,6 +68,9 @@ struct SummarizerView: View {
                 }
             }
             .padding(16)
+            .navigationDestination(for: SummaryItem.self) { item in
+                SummaryItemDetailView(item: item)
+            }
         }
     }
 }

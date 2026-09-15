@@ -19,6 +19,6 @@ struct FoundationResponse {
     @Guide(description: "Category: Work, Personal, Study, Code or Unkownm")
     var category: String
 
-    @Guide(description: "Up to 3 specific, relevant keywords, avoiding generic terms")
+    @Guide(description: "Specific, relevant keywords, avoiding generic terms", .count(3))
     var keywords: [String]
 }
