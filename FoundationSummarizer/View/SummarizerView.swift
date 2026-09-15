@@ -39,7 +39,13 @@ struct SummarizerView: View {
                     .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
-                
+                .keyboardShortcut("R", modifiers: [.command, .shift])
+                         
+                Text("Shortcut: 􀆔􀆝R")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                                
                 if !viewModel.itens.isEmpty {
                     
                     Divider()
