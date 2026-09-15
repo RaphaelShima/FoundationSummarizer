@@ -41,7 +41,7 @@ extension Category {
         case .study:
             return .yellow
         case .personal:
-            return .black
+            return .purple
         case .unkown:
             return .pink
         }
