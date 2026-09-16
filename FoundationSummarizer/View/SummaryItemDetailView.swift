@@ -57,8 +57,7 @@ struct SummaryItemDetailView: View {
 
 #Preview {
     SummaryItemDetailView(item:
-                            SummaryItem(id: UUID(),
-                                        title: "Teste",
+                            SummaryItem(title: "Teste",
                                         summaryText: "Olá mundo",
                                         category: .code,
                                         keywords: ["Teste1",
