@@ -13,23 +13,27 @@ import FoundationModels
 
 protocol SummarizerViewModelProtocol {
     var itens: [SummaryItem] { get }
-    var service: SummarizeServiceProtocol { get }
+    var foundationService: FoundationServiceProtocol { get }
+    var firebaseService: FirebaseServiceProtocol { get }
     
     func openFilesPanel() async
     func handleFileSelection(url: URL) async -> String
-    func makeSummaryItem(foundationResponse: FoundationResponse) -> SummaryItem
+    func makeSummary(foundationResponse: FoundationResponse) -> SummaryItem
+    func saveSummary(summary: SummaryItem) async
 }
 
+@MainActor
 @Observable
 final class SummarizerViewModel: SummarizerViewModelProtocol {
     
-    var itens: [SummaryItem] 
-    var service: SummarizeServiceProtocol
+    var itens: [SummaryItem] = []
+    let foundationService: FoundationServiceProtocol
+    let firebaseService: FirebaseServiceProtocol
     
-    init(itens: [SummaryItem],
-         service: SummarizeServiceProtocol) {
-        self.itens = itens
-        self.service = service
+    init(foundationService: FoundationServiceProtocol,
+         firebaseService: FirebaseServiceProtocol) {
+        self.foundationService = foundationService
+        self.firebaseService = firebaseService
     }
     
     func openFilesPanel() async {
@@ -41,10 +45,10 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
         if panel.runModal() == .OK, let url = panel.url {
             let content = await handleFileSelection(url: url)
             do {
-                let response = try await service.getResponse(fileContent: content)
+                let response = try await foundationService.getResponse(fileContent: content)
                 let generatedResponse = response.content
-                let summmaryItem = makeSummaryItem(foundationResponse: generatedResponse)
-                itens.append(summmaryItem)
+                let summmary = makeSummary(foundationResponse: generatedResponse)
+                await saveSummary(summary: summmary)
             } catch {
                 print("Summarize error: \(error)")
             }
@@ -67,11 +71,27 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
         }
     }
     
-    func makeSummaryItem(foundationResponse: FoundationResponse) -> SummaryItem {
-        return SummaryItem(id: UUID(),
-                           title: foundationResponse.title,
+    func makeSummary(foundationResponse: FoundationResponse) -> SummaryItem {
+        return SummaryItem(title: foundationResponse.title,
                            summaryText: foundationResponse.summary,
                            category: Category(rawValue: foundationResponse.category) ?? .unkown,
                            keywords: foundationResponse.keywords)
+    }
+    
+    func saveSummary(summary: SummaryItem) async {
+        do {
+            try await firebaseService.saveSummary(summary: summary)
+            itens.append(summary)
+        } catch {
+            print("Save summary failed: \(error)")
+        }
+    }
+    
+    func fetchSummary() async {
+        do {
+            itens = try await firebaseService.fetchSummaries()
+        } catch {
+            print("Fetch summaries failed: \(error)")
+        }
     }
 }

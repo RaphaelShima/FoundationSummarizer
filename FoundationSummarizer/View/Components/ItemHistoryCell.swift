@@ -34,10 +34,11 @@ struct SummaryItemHistoryCell: View {
 }
 
 #Preview {
-    SummaryItemHistoryCell(item: SummaryItem(id: UUID(),
-                                      title: "Teste1",
-                                      summaryText: "",
-                                      category: .code,
-                                      keywords: ["Teste1"])
+    SummaryItemHistoryCell(item:
+                            SummaryItem(
+                                title: "Teste1",
+                                summaryText: "",
+                                category: .code,
+                                keywords: ["Teste1"])
     )
 }

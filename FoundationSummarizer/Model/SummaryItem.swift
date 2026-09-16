@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import SwiftData
+import FirebaseFirestore
 
-struct SummaryItem: Identifiable, Hashable {
-    let id: UUID
+struct SummaryItem: Identifiable, Hashable, Codable {
+    @DocumentID var id: String?
     var title: String
     var summaryText: String
     let category: Category

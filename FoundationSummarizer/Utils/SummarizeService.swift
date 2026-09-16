@@ -1,5 +1,5 @@
 //
-//  SummarizeService.swift
+//  FoundationService.swift
 //  FoundationSummarizer
 //
 //  Created by Raphael Shimamoto on 14/09/26.
@@ -8,11 +8,11 @@
 import Foundation
 import FoundationModels
 
-protocol SummarizeServiceProtocol {
+protocol FoundationServiceProtocol {
     @MainActor func getResponse(fileContent: String) async throws -> LanguageModelSession.Response<FoundationResponse>
 }
 
-struct SummarizeService: SummarizeServiceProtocol {
+struct FoundationService: FoundationServiceProtocol {
     
     let session = LanguageModelSession()
     

@@ -77,6 +77,9 @@ struct SummarizerView: View {
             .navigationDestination(for: SummaryItem.self) { item in
                 SummaryItemDetailView(item: item)
             }
+            .task {
+                await viewModel.fetchSummary()
+            }
         }
     }
 }
