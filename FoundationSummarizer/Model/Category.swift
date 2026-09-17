@@ -7,43 +7,45 @@
 
 import Foundation
 import SwiftUI
+import FoundationModels
 
+@Generable
 enum Category: String, Codable {
     case code = "Code"
     case work = "Work"
     case study = "Study"
     case personal = "Personal"
-    case unkown = "Unkown"
+    case unknown = "Unknown"
 }
 
 extension Category {
-    func returnIcon() -> String {
+    var icon: String {
         switch self {
         case .code:
-            return "chevron.left.forwardslash.chevron.right"
+            "chevron.left.forwardslash.chevron.right"
         case .work:
-            return "bag.fill"
+            "bag.fill"
         case .study:
-            return "book.pages.fill"
+            "book.pages.fill"
         case .personal:
-            return "person.fill"
-        case .unkown:
-            return ""
+            "person.fill"
+        case .unknown:
+            ""
         }
     }
-    
-    func returnColor() -> Color {
+
+    var color: Color {
         switch self {
         case .code:
-            return .blue
+            .blue
         case .work:
-            return .green
+            .green
         case .study:
-            return .yellow
+            .yellow
         case .personal:
-            return .purple
-        case .unkown:
-            return .pink
+            .purple
+        case .unknown:
+            .pink
         }
     }
 }

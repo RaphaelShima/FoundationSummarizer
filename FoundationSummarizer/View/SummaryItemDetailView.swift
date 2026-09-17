@@ -1,5 +1,5 @@
 //
-//  SummaryItemDetailView.swift
+//  SummaryDetailView.swift
 //  FoundationSummarizer
 //
 //  Created by Raphael Shimamoto on 14/09/26.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct SummaryItemDetailView: View {
+struct SummaryDetailView: View {
     
-    let item: SummaryItem
+    let item: Summary
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -22,8 +22,8 @@ struct SummaryItemDetailView: View {
             }
             
             Tag(title: item.category.rawValue,
-                textColor: item.category.returnColor(),
-                backgroundColor: item.category.returnColor())
+                textColor: item.category.color,
+                backgroundColor: item.category.color)
             .padding(.top,4)
             
             Text("Summary")
@@ -56,11 +56,15 @@ struct SummaryItemDetailView: View {
 }
 
 #Preview {
-    SummaryItemDetailView(item:
-                            SummaryItem(title: "Teste",
-                                        summaryText: "Olá mundo",
-                                        category: .code,
-                                        keywords: ["Teste1",
-                                                   "Teste2",
-                                                   "Teste3"]))
+    SummaryDetailView(item:
+                        Summary(
+                            id: UUID(),
+                            title: "Teste",
+                            summaryText: "Olá mundo",
+                            category: .code,
+                            keywords: ["Teste1",
+                                       "Teste2",
+                                       "Teste3"]
+                        )
+    )
 }

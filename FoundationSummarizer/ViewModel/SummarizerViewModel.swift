@@ -7,91 +7,92 @@
 
 import Foundation
 import Observation
-import AppKit
-import UniformTypeIdentifiers
 import FoundationModels
 
 protocol SummarizerViewModelProtocol {
-    var itens: [SummaryItem] { get }
-    var foundationService: FoundationServiceProtocol { get }
-    var firebaseService: FirebaseServiceProtocol { get }
+    var summaries: [Summary] { get }
+    var errorMessage: String { get set }
+    
+    var filePanel: FilePanelProtocol { get }
+    var foundationRepository: FoundationRepositoryProtocol { get }
+    var firebaseRepository: FirebaseRepositoryProtocol { get }
     
     func openFilesPanel() async
-    func handleFileSelection(url: URL) async -> String
-    func makeSummary(foundationResponse: FoundationResponse) -> SummaryItem
-    func saveSummary(summary: SummaryItem) async
+    func makeSummary(foundationResponse: FoundationResponse) -> Summary
+    func saveSummary(summary: Summary) async
+    func deleteSummary(summary: Summary) async
 }
 
 @MainActor
 @Observable
 final class SummarizerViewModel: SummarizerViewModelProtocol {
     
-    var itens: [SummaryItem] = []
-    let foundationService: FoundationServiceProtocol
-    let firebaseService: FirebaseServiceProtocol
+    var summaries: [Summary] = []
+    var errorMessage: String = ""
     
-    init(foundationService: FoundationServiceProtocol,
-         firebaseService: FirebaseServiceProtocol) {
-        self.foundationService = foundationService
-        self.firebaseService = firebaseService
+    let filePanel: FilePanelProtocol
+    let foundationRepository: FoundationRepositoryProtocol
+    let firebaseRepository: FirebaseRepositoryProtocol
+    
+    init(filePanel: FilePanelProtocol,
+         foundationRepository: FoundationRepositoryProtocol,
+         firebaseRepository: FirebaseRepositoryProtocol) {
+        self.filePanel = filePanel
+        self.foundationRepository = foundationRepository
+        self.firebaseRepository = firebaseRepository
     }
     
     func openFilesPanel() async {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.allowedContentTypes = [.text, .pdf, .swiftSource]
-        panel.prompt = "Choose"
-        
-        if panel.runModal() == .OK, let url = panel.url {
-            let content = await handleFileSelection(url: url)
-            do {
-                let response = try await foundationService.getResponse(fileContent: content)
-                let generatedResponse = response.content
-                let summmary = makeSummary(foundationResponse: generatedResponse)
-                await saveSummary(summary: summmary)
-            } catch {
-                print("Summarize error: \(error)")
-            }
-        }
+        guard let fileURL = filePanel.pickFile() else { return }
+        await summarizeFile(from: fileURL)
     }
     
-    func handleFileSelection(url: URL) async -> String {
-        guard url.startAccessingSecurityScopedResource() else {
-            print("No permission to access file: \(url)")
-            return ""
-        }
-        defer { url.stopAccessingSecurityScopedResource() }
-        
+    private func summarizeFile(from url: URL) async {
         do {
-            return try String(contentsOf: url,
-                                 encoding: .utf8)
+            let content = try await filePanel.readFile(from: url)
+            let response = try await foundationRepository.summarize(fileContent: content)
+            let summary = makeSummary(foundationResponse: response)
+            await saveSummary(summary: summary)
         } catch {
-            print("Faile to read file \(url): \(error)")
-            return ""
+            errorMessage = "Failed to summarize file."
+            print("Summarize file failed: \(error)")
         }
     }
     
-    func makeSummary(foundationResponse: FoundationResponse) -> SummaryItem {
-        return SummaryItem(title: foundationResponse.title,
-                           summaryText: foundationResponse.summary,
-                           category: Category(rawValue: foundationResponse.category) ?? .unkown,
-                           keywords: foundationResponse.keywords)
+    func makeSummary(foundationResponse: FoundationResponse) -> Summary {
+        return Summary(id: UUID(),
+                       title: foundationResponse.title,
+                       summaryText: foundationResponse.summary,
+                       category: foundationResponse.category,
+                       keywords: foundationResponse.keywords)
     }
     
-    func saveSummary(summary: SummaryItem) async {
+    func saveSummary(summary: Summary) async {
         do {
-            try await firebaseService.saveSummary(summary: summary)
-            itens.append(summary)
+            try await firebaseRepository.save(summary)
+            summaries.append(summary)
         } catch {
-            print("Save summary failed: \(error)")
+            errorMessage = "Failed to save summary."
+            print("Save summary failed: \(error.localizedDescription)")
+        }
+    }
+    
+    func deleteSummary(summary: Summary) async {
+        do {
+            try await firebaseRepository.delete(summary)
+            summaries.removeAll { $0.id == summary.id }
+        } catch {
+            errorMessage = "Failed to delete summary."
+            print("Delete summary failed: \(error.localizedDescription)")
         }
     }
     
     func fetchSummary() async {
         do {
-            itens = try await firebaseService.fetchSummaries()
+            summaries = try await firebaseRepository.fetch()
         } catch {
-            print("Fetch summaries failed: \(error)")
+            errorMessage = "Failed to fetch summaries."
+            print("Fetch summaries failed: \(error.localizedDescription)")
         }
     }
 }

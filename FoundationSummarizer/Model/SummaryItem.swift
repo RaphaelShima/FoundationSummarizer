@@ -1,15 +1,14 @@
 //
-//  SummaryItem.swift
+//  Summary.swift
 //  FoundationSummarizer
 //
 //  Created by Raphael Shimamoto on 12/09/26.
 //
 
 import Foundation
-import FirebaseFirestore
 
-struct SummaryItem: Identifiable, Hashable, Codable {
-    @DocumentID var id: String?
+struct Summary: Identifiable, Hashable {
+    let id: UUID
     var title: String
     var summaryText: String
     let category: Category
