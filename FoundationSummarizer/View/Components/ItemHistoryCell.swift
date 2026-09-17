@@ -1,5 +1,5 @@
 //
-//  SummaryItemHistoryCell.swift
+//  SummaryHistoryCell.swift
 //  FoundationSummarizer
 //
 //  Created by Raphael Shimamoto on 13/09/26.
@@ -7,26 +7,25 @@
 
 import SwiftUI
 
-struct SummaryItemHistoryCell: View {
+struct SummaryHistoryCell: View {
     
-    @State var item: SummaryItem
+    @State var summary: Summary
     
     var body: some View {
         HStack {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .foregroundStyle(item.category.returnColor())
-                    .frame(width: 24, height: 24)
-                
-                Image(systemName: item.category.returnIcon())
-                    .font(.system(size: 8))
-            }
+            Image(systemName: summary.category.icon)
+                .font(.system(size: 16))
+                .background {
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundStyle(summary.category.color)
+                        .frame(width: 24, height: 24)
+                }
             
             VStack(alignment: .leading) {
-                Text(item.title)
+                Text(summary.title)
                     .font(.headline)
                 
-                Text(item.category.rawValue)
+                Text(summary.category.rawValue)
                     .font(.subheadline)
             }
         }
@@ -34,11 +33,13 @@ struct SummaryItemHistoryCell: View {
 }
 
 #Preview {
-    SummaryItemHistoryCell(item:
-                            SummaryItem(
+    SummaryHistoryCell(summary:
+                            Summary(
+                                id: UUID(),
                                 title: "Teste1",
                                 summaryText: "",
                                 category: .code,
-                                keywords: ["Teste1"])
+                                keywords: ["Teste1"]
+                            )
     )
 }

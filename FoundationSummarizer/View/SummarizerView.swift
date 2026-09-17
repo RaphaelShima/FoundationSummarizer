@@ -46,7 +46,7 @@ struct SummarizerView: View {
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                                 
-                if !viewModel.itens.isEmpty {
+                if !viewModel.summaries.isEmpty {
                     
                     Divider()
                     
@@ -54,9 +54,9 @@ struct SummarizerView: View {
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
                     
-                    ForEach(viewModel.itens.suffix(3)) { item in
-                        NavigationLink(value: item) {
-                            SummaryItemHistoryCell(item: item)
+                    ForEach(viewModel.summaries.suffix(3)) { summary in
+                        NavigationLink(value: summary) {
+                            SummaryHistoryCell(summary: summary)
                         }
                         .buttonStyle(.borderless)
                     }
@@ -74,11 +74,21 @@ struct SummarizerView: View {
                 }
             }
             .padding(16)
-            .navigationDestination(for: SummaryItem.self) { item in
-                SummaryItemDetailView(item: item)
+            .navigationDestination(for: Summary.self) { item in
+                SummaryDetailView(item: item)
             }
             .task {
                 await viewModel.fetchSummary()
+            }
+            .alert("Error", isPresented: Binding(
+                get: { !viewModel.errorMessage.isEmpty },
+                set: { isPresented in
+                    if !isPresented { viewModel.errorMessage = "" }
+                }
+            )) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(viewModel.errorMessage)
             }
         }
     }

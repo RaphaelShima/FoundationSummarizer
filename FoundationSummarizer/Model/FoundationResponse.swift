@@ -16,8 +16,8 @@ struct FoundationResponse {
     @Guide(description: "Summarization of the main ideas in 2 to 3 sentences")
     var summary: String
 
-    @Guide(description: "Category: Work, Personal, Study, Code or Unkownm")
-    var category: String
+    @Guide(description: "The document's category")
+    var category: Category
 
     @Guide(description: "Specific, relevant keywords, avoiding generic terms", .count(3))
     var keywords: [String]

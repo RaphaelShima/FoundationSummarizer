@@ -11,18 +11,21 @@ import FirebaseCore
 @main
 struct FoundationSummarizerApp: App {
     
-    @State private var foundationService = FoundationService()
-    @State private var fbService: FirebaseService
+    @State private var filePanel = FilePanel()
+    @State private var foundationRepository: FoundationRepository
+    @State private var fbRepository: FirebaseRepository
     
     init() {
         FirebaseApp.configure()
-        fbService = FirebaseService()
+        fbRepository = FirebaseRepository()
+        foundationRepository = FoundationRepository()
     }
     
     var body: some Scene {
         MenuBarExtra("Foundation Summarizer", systemImage: "pencil.line") {
-            SummarizerView(viewModel: SummarizerViewModel(foundationService: foundationService,
-                                                          firebaseService: fbService))
+            SummarizerView(viewModel: SummarizerViewModel(filePanel: filePanel,
+                                                          foundationRepository: foundationRepository,
+                                                          firebaseRepository: fbRepository))
         }
         .menuBarExtraStyle(.window)
     }
