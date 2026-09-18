@@ -8,11 +8,11 @@
 import Foundation
 import FoundationModels
 
-protocol FoundationRepositoryProtocol {
-     func summarize(fileContent: String) async throws -> FoundationResponse
+protocol SummaryFoundationRepositoryProtocol {
+    func summarize(fileContent: String) async throws -> FoundationResponse
 }
 
-struct FoundationRepository: FoundationRepositoryProtocol {
+struct SummaryFoundationRepository: SummaryFoundationRepositoryProtocol {
     
     let session = LanguageModelSession()
     
