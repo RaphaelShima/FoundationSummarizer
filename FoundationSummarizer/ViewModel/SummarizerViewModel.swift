@@ -14,8 +14,9 @@ protocol SummarizerViewModelProtocol {
     var errorMessage: String { get set }
     
     var filePanel: FilePanelProtocol { get }
-    var foundationRepository: FoundationRepositoryProtocol { get }
+    var summaryFoundationRepository: SummaryFoundationRepositoryProtocol { get }
     var firebaseRepository: FirebaseRepositoryProtocol { get }
+    var notificationRepository: NotificationRepository { get }
     
     func openFilesPanel() async
     func makeSummary(foundationResponse: FoundationResponse) -> Summary
@@ -31,15 +32,22 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
     var errorMessage: String = ""
     
     let filePanel: FilePanelProtocol
-    let foundationRepository: FoundationRepositoryProtocol
+    let summaryFoundationRepository: SummaryFoundationRepositoryProtocol
     let firebaseRepository: FirebaseRepositoryProtocol
+    let notificationRepository: NotificationRepository
     
     init(filePanel: FilePanelProtocol,
-         foundationRepository: FoundationRepositoryProtocol,
-         firebaseRepository: FirebaseRepositoryProtocol) {
+         summaryFoundationRepository: SummaryFoundationRepositoryProtocol,
+         firebaseRepository: FirebaseRepositoryProtocol,
+         notificationRepository: NotificationRepository) {
         self.filePanel = filePanel
-        self.foundationRepository = foundationRepository
+        self.summaryFoundationRepository = summaryFoundationRepository
         self.firebaseRepository = firebaseRepository
+        self.notificationRepository = notificationRepository
+        
+        Task {
+            try? await notificationRepository.requestPermission()
+        }
     }
     
     func openFilesPanel() async {
@@ -50,9 +58,10 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
     private func summarizeFile(from url: URL) async {
         do {
             let content = try await filePanel.readFile(from: url)
-            let response = try await foundationRepository.summarize(fileContent: content)
+            let response = try await summaryFoundationRepository.summarize(fileContent: content)
             let summary = makeSummary(foundationResponse: response)
             await saveSummary(summary: summary)
+            try await notificationRepository.sendNotification(summary)
         } catch {
             errorMessage = "Failed to summarize file."
             print("Summarize file failed: \(error)")
