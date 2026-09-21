@@ -50,7 +50,7 @@ struct SummarizerView: View {
                     
                     Divider()
                     
-                    Text("Recentes")
+                    Text("Latest")
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
                     
@@ -64,7 +64,7 @@ struct SummarizerView: View {
                     Divider()
                     
                     NavigationLink {
-                        ItemHistoryView()
+                        SummaryHistoryView(viewModel: SummaryHistoryViewModel(repository: FirebaseRepository()))
                     } label: {
                         Text("See complete history →")
                             .font(.body.weight(.medium))
