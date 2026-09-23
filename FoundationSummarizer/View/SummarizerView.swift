@@ -10,9 +10,10 @@ import SwiftUI
 struct SummarizerView: View {
     
     @State var viewModel: SummarizerViewModel
+    @State private var router = Router()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             VStack(alignment: .leading) {
                 HStack {
                     Image(systemName: "doc.text.fill")
@@ -55,16 +56,18 @@ struct SummarizerView: View {
                         .foregroundStyle(.secondary)
                     
                     ForEach(viewModel.summaries.suffix(3)) { summary in
-                        NavigationLink(value: summary) {
-                            SummaryHistoryCell(summary: summary)
+                        Button {
+                            router.push(.detail(summary))
+                        } label: {
+                            SummaryCell(summary: summary)
                         }
                         .buttonStyle(.borderless)
                     }
                     
                     Divider()
                     
-                    NavigationLink {
-                        SummaryHistoryView(viewModel: SummaryHistoryViewModel(repository: FirebaseRepository()))
+                    Button {
+                        router.push(.history)
                     } label: {
                         Text("See complete history →")
                             .font(.body.weight(.medium))
@@ -74,8 +77,13 @@ struct SummarizerView: View {
                 }
             }
             .padding(16)
-            .navigationDestination(for: Summary.self) { item in
-                SummaryDetailView(item: item)
+            .navigationDestination(for: Paths.self) { destination in
+                switch destination {
+                case .history:
+                    SummaryHistoryView(viewModel: SummaryHistoryViewModel(repository: viewModel.firebaseRepository))
+                case .detail(let summary):
+                    SummaryDetailView(item: summary)
+                }
             }
             .task {
                 await viewModel.fetchSummary()
@@ -91,6 +99,7 @@ struct SummarizerView: View {
                 Text(viewModel.errorMessage)
             }
         }
+        .environment(router)
     }
 }
 

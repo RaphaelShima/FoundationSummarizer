@@ -10,13 +10,13 @@ import SwiftUI
 struct SummaryDetailView: View {
     
     let item: Summary
-    @Environment(\.dismiss) var dismiss
+    @Environment(Router.self) private var router
     
     var body: some View {
         VStack(alignment: .leading) {
             
             Button {
-                dismiss()
+                router.pop()
             } label: {
                 Image(systemName: "chevron.left")
             }
@@ -48,9 +48,8 @@ struct SummaryDetailView: View {
                 }
             }
         }
-        .padding(8)
-        .frame(maxWidth: .infinity,
-               maxHeight: .infinity)
+        .padding(4)
+        .frame(maxWidth: .infinity)
         .toolbarVisibility(.hidden, for: .windowToolbar)
     }
 }
@@ -64,7 +63,8 @@ struct SummaryDetailView: View {
                             category: .code,
                             keywords: ["Teste1",
                                        "Teste2",
-                                       "Teste3"]
+                                       "Teste3"],
+                            createdAt: .now
                         )
     )
 }

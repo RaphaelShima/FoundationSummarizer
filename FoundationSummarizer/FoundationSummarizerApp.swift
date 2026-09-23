@@ -13,8 +13,8 @@ import UserNotifications
 struct FoundationSummarizerApp: App {
     
     @State private var filePanel = FilePanel()
-    @State private var summaryFoundationRepository: SummaryFoundationRepository
     @State private var fireBaseRepository: FirebaseRepository
+    @State private var summaryFoundationRepository: SummaryFoundationRepository
     @State private var notificationRepository: NotificationRepository
     @State private var viewModel: SummarizerViewModel
     
@@ -23,19 +23,19 @@ struct FoundationSummarizerApp: App {
     init() {
         FirebaseApp.configure()
         let firebaseRepository = FirebaseRepository()
-               let summaryFoundationRepository = SummaryFoundationRepository()
-               let notificationRepository = NotificationRepository()
-
-               self.fireBaseRepository = firebaseRepository
-               self.summaryFoundationRepository = summaryFoundationRepository
-               self.notificationRepository = notificationRepository
-
-               self.viewModel = SummarizerViewModel(
-                   filePanel: FilePanel(),
-                   summaryFoundationRepository: summaryFoundationRepository,
-                   firebaseRepository: firebaseRepository,
-                   notificationRepository: notificationRepository
-               )
+        let summaryFoundationRepository = SummaryFoundationRepository()
+        let notificationRepository = NotificationRepository()
+        
+        self.fireBaseRepository = firebaseRepository
+        self.summaryFoundationRepository = summaryFoundationRepository
+        self.notificationRepository = notificationRepository
+        
+        self.viewModel = SummarizerViewModel(
+            filePanel: FilePanel(),
+            summaryFoundationRepository: summaryFoundationRepository,
+            firebaseRepository: firebaseRepository,
+            notificationRepository: notificationRepository
+        )
         
         UNUserNotificationCenter.current().delegate = notificationDelegate
     }

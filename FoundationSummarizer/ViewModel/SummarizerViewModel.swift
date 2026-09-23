@@ -16,7 +16,7 @@ protocol SummarizerViewModelProtocol {
     var filePanel: FilePanelProtocol { get }
     var summaryFoundationRepository: SummaryFoundationRepositoryProtocol { get }
     var firebaseRepository: FirebaseRepositoryProtocol { get }
-    var notificationRepository: NotificationRepository { get }
+    var notificationRepository: NotificationRepositoryProtocol { get }
     
     func openFilesPanel() async
     func makeSummary(foundationResponse: FoundationResponse) -> Summary
@@ -34,12 +34,12 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
     let filePanel: FilePanelProtocol
     let summaryFoundationRepository: SummaryFoundationRepositoryProtocol
     let firebaseRepository: FirebaseRepositoryProtocol
-    let notificationRepository: NotificationRepository
+    let notificationRepository: NotificationRepositoryProtocol
     
     init(filePanel: FilePanelProtocol,
          summaryFoundationRepository: SummaryFoundationRepositoryProtocol,
          firebaseRepository: FirebaseRepositoryProtocol,
-         notificationRepository: NotificationRepository) {
+         notificationRepository: NotificationRepositoryProtocol) {
         self.filePanel = filePanel
         self.summaryFoundationRepository = summaryFoundationRepository
         self.firebaseRepository = firebaseRepository
@@ -73,7 +73,8 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
                        title: foundationResponse.title,
                        summaryText: foundationResponse.summary,
                        category: foundationResponse.category,
-                       keywords: foundationResponse.keywords)
+                       keywords: foundationResponse.keywords,
+                       createdAt: .now)
     }
     
     func saveSummary(summary: Summary) async {

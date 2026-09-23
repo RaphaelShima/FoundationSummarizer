@@ -23,7 +23,8 @@ struct FirebaseRepository: FirebaseRepositoryProtocol {
             title: summary.title,
             summaryText: summary.summaryText,
             category: summary.category,
-            keywords: summary.keywords
+            keywords: summary.keywords,
+            createdAt: summary.createdAt
         )
 
         do {
@@ -50,8 +51,8 @@ struct FirebaseRepository: FirebaseRepositoryProtocol {
     func fetch() async throws -> [Summary] {
         let snapshot = try await db
             .collection("summaries")
+            .order(by: "createdAt", descending: true)
             .getDocuments()
-        
         
         return try snapshot.documents.map { document in
             let dto = try document.data(
@@ -67,7 +68,8 @@ struct FirebaseRepository: FirebaseRepositoryProtocol {
                 title: dto.title,
                 summaryText: dto.summaryText,
                 category: dto.category,
-                keywords: dto.keywords
+                keywords: dto.keywords,
+                createdAt: dto.createdAt
             )
         }
     }
