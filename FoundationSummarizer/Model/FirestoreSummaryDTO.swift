@@ -13,4 +13,5 @@ struct FirestoreSummaryDTO: Codable {
     let summaryText: String
     let category: Category
     let keywords: [String]
+    let createdAt: Date
 }

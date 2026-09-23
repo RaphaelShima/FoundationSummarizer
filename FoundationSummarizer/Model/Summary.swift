@@ -13,4 +13,5 @@ struct Summary: Identifiable, Hashable {
     var summaryText: String
     let category: Category
     let keywords: [String]
+    let createdAt: Date
 }

@@ -30,7 +30,7 @@ extension Category {
         case .personal:
             "person.fill"
         case .unknown:
-            ""
+            "questionmark"
         }
     }
 
