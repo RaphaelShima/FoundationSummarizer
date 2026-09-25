@@ -27,7 +27,7 @@ struct SummarizerView: View {
                 
                 Button {
                     Task {
-                        await viewModel.openFilesPanel()
+                        try? await viewModel.openFilesPanel()
                     }
                 } label: {
                     HStack {
@@ -86,7 +86,7 @@ struct SummarizerView: View {
                 }
             }
             .task {
-                await viewModel.fetchSummary()
+                try? await viewModel.fetchSummary()
             }
             .alert("Error", isPresented: Binding(
                 get: { !viewModel.errorMessage.isEmpty },

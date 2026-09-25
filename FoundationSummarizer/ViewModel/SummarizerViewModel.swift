@@ -18,10 +18,11 @@ protocol SummarizerViewModelProtocol {
     var firebaseRepository: FirebaseRepositoryProtocol { get }
     var notificationRepository: NotificationRepositoryProtocol { get }
     
-    func openFilesPanel() async
+    func openFilesPanel() async throws
     func makeSummary(foundationResponse: FoundationResponse) -> Summary
-    func saveSummary(summary: Summary) async
-    func deleteSummary(summary: Summary) async
+    func saveSummary(summary: Summary) async throws
+    func deleteSummary(summary: Summary) async throws
+    func fetchSummary() async throws
 }
 
 @MainActor
@@ -50,21 +51,25 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
         }
     }
     
-    func openFilesPanel() async {
+    func openFilesPanel() async throws {
         guard let fileURL = filePanel.pickFile() else { return }
-        await summarizeFile(from: fileURL)
+        try await summarizeFile(from: fileURL)
     }
     
-    private func summarizeFile(from url: URL) async {
+    private func summarizeFile(from url: URL) async throws {
+        let content = try await filePanel.readFile(from: url)
+        
+        let response = try await summaryFoundationRepository.summarize(fileContent: content)
+        
+        let summary = makeSummary(foundationResponse: response)
+        
+        try await saveSummary(summary: summary)
+        
         do {
-            let content = try await filePanel.readFile(from: url)
-            let response = try await summaryFoundationRepository.summarize(fileContent: content)
-            let summary = makeSummary(foundationResponse: response)
-            await saveSummary(summary: summary)
             try await notificationRepository.sendNotification(summary)
         } catch {
-            errorMessage = "Failed to summarize file."
-            print("Summarize file failed: \(error)")
+            errorMessage = "Failed to send notification."
+            throw error
         }
     }
     
@@ -77,32 +82,32 @@ final class SummarizerViewModel: SummarizerViewModelProtocol {
                        createdAt: .now)
     }
     
-    func saveSummary(summary: Summary) async {
+    func saveSummary(summary: Summary) async throws {
         do {
             try await firebaseRepository.save(summary)
             summaries.append(summary)
         } catch {
             errorMessage = "Failed to save summary."
-            print("Save summary failed: \(error.localizedDescription)")
+            throw error
         }
     }
     
-    func deleteSummary(summary: Summary) async {
+    func deleteSummary(summary: Summary) async throws {
         do {
             try await firebaseRepository.delete(summary)
             summaries.removeAll { $0.id == summary.id }
         } catch {
             errorMessage = "Failed to delete summary."
-            print("Delete summary failed: \(error.localizedDescription)")
+            throw error
         }
     }
     
-    func fetchSummary() async {
+    func fetchSummary() async throws {
         do {
             summaries = try await firebaseRepository.fetch()
         } catch {
             errorMessage = "Failed to fetch summaries."
-            print("Fetch summaries failed: \(error.localizedDescription)")
+            throw error
         }
     }
 }

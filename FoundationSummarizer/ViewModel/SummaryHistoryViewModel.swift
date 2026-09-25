@@ -16,6 +16,7 @@ protocol SummaryHistoryViewModelProtocol {
     var showFilterMenu: Bool { get set}
     
     func fetchSummaries() async
+    func filterSummaries(_ filterOption: FilterOption) -> [Summary] 
     func searchSummary() -> [Summary]
 }
 
@@ -26,6 +27,8 @@ final class SummaryHistoryViewModel: SummaryHistoryViewModelProtocol {
     var searchText: String = ""
     var filterOption: FilterOption = .newest
     var showFilterMenu: Bool = false
+    var errorMessage: String?
+    var showError: Bool = false
     
     private let repository: FirebaseRepositoryProtocol
     
@@ -37,7 +40,8 @@ final class SummaryHistoryViewModel: SummaryHistoryViewModelProtocol {
         do {
             summaries = try await repository.fetch()
         } catch {
-            print("Fetch error \(error)")
+            errorMessage = "Não foi possível carregar os resumos. Tente novamente."
+            showError = true
         }
     }
     

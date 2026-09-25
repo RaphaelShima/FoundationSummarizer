@@ -23,33 +23,35 @@ struct SummaryHistoryView: View {
                     Image(systemName: "chevron.left")
                 }
                 
-                if viewModel.isSearching {
-                    filterButton
-                        .matchedGeometryEffect(id: "filterButton", in: filterButtonNamespace)
-                    
-                    TextField("Buscar...", text: $viewModel.searchText)
-                        .focused($isSearchFocused)
-                        .textFieldStyle(.roundedBorder)
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
-                } else {
-                    Spacer()
-                    
-                    filterButton
-                        .matchedGeometryEffect(id: "filterButton", in: filterButtonNamespace)
-                }
-                
-                Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        viewModel.isSearching.toggle()
-                        if viewModel.isSearching {
-                            isSearchFocused = true
-                        } else {
-                            viewModel.searchText = ""
-                            isSearchFocused = false
-                        }
+                if !viewModel.summaries.isEmpty {
+                    if viewModel.isSearching {
+                        filterButton
+                            .matchedGeometryEffect(id: "filterButton", in: filterButtonNamespace)
+                        
+                        TextField("Buscar...", text: $viewModel.searchText)
+                            .focused($isSearchFocused)
+                            .textFieldStyle(.roundedBorder)
+                            .transition(.move(edge: .trailing).combined(with: .opacity))
+                    } else {
+                        Spacer()
+                        
+                        filterButton
+                            .matchedGeometryEffect(id: "filterButton", in: filterButtonNamespace)
                     }
-                } label: {
-                    Image(systemName: viewModel.isSearching ? "xmark.circle.fill" : "magnifyingglass")
+                    
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            viewModel.isSearching.toggle()
+                            if viewModel.isSearching {
+                                isSearchFocused = true
+                            } else {
+                                viewModel.searchText = ""
+                                isSearchFocused = false
+                            }
+                        }
+                    } label: {
+                        Image(systemName: viewModel.isSearching ? "xmark.circle.fill" : "magnifyingglass")
+                    }
                 }
             }
             

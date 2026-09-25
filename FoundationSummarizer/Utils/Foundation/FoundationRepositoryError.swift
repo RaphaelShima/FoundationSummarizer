@@ -9,5 +9,4 @@ import Foundation
 
 enum FoundationRepositoryError: Error {
     case summarizationFailed
-    case notificationResponseFailed
 }
