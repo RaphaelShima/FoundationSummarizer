@@ -42,6 +42,10 @@ struct NotificationRepository: NotificationRepositoryProtocol {
             trigger: notificationTrigger
         )
         
-        try await notificationCenter.add(notificationRequest)
+        do {
+            try await notificationCenter.add(notificationRequest)
+        } catch {
+            throw NotificationRepositoryError.sendFailed
+        }
     }
 }
